@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient
 const app = express();
 
-
+app.set('view engine', 'ejs')
 app.use(bodyParser.urlencoded({ extended: true }))
 
 MongoClient.connect('mongodb+srv://dbUser:dbUserPassword@cluster0.ztuxj.mongodb.net/test?retryWrites=true&w=majority', 
@@ -14,7 +14,11 @@ MongoClient.connect('mongodb+srv://dbUser:dbUserPassword@cluster0.ztuxj.mongodb.
     const quotesCollection = db.collection('quotes')
 
         app.get("/", (req, res) => {
-            res.sendFile(__dirname + '/index.html')
+            const cursor = db.collection('quotes').find().toArray()
+                .then(results => {
+                    res.render('index.ejs', { quotes: results })
+                })
+                .catch(error => console.log(error))
         })
 
         //post
